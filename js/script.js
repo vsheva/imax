@@ -23,7 +23,7 @@ const showMoviePopular = async () => {
         <img
         src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
         class="card-img-top"
-        alt="${movie.title}"
+        alt=${movie.title}
       />
          `
             : `  <img
@@ -35,11 +35,12 @@ const showMoviePopular = async () => {
         }
           </a>
   
-    < class="card-body">
+    <div class="card-body">
       <h5 class="card-title">${movie.title}</h5>
       <p class="card-text">
         <small class="text-muted">Release: ${movie.release_date}</small>
       </p>
+      </div>
     `;
 
     document.getElementById('popular-movies').appendChild(div);
