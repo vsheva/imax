@@ -16,9 +16,7 @@ const showMoviePopular = async () => {
     div.classList.add('card');
 
     div.innerHTML = `
-    
           <a href="movie-details.html?id=${movie.id}">
-
         ${
           movie.poster_path
             ? `
@@ -36,7 +34,6 @@ const showMoviePopular = async () => {
          `
         }
           </a>
-          
   
     < class="card-body">
       <h5 class="card-title">${movie.title}</h5>
