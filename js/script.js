@@ -86,9 +86,10 @@ const showShowsPopular = async () => {
 };
 
 const displayMovieDetails = async () => {
-  const movieId = window.location.search.split('=')[1]; // ?id=299054
+  const movieId = window.location.search.split('=')[1];
 
   const movie = await fetchApi(`movie/${movieId}`);
+  console.log(movie);
 
   //  for background image
   displayBackgroundImage('movie', movie.backdrop_path); //type
@@ -129,7 +130,7 @@ const displayMovieDetails = async () => {
             <ul class="list-group">
             ${movie.genres.map(genre => `<li>${genre.name}</li>`).join('')} 
             </ul>
-            <a href="${movie.homepage}" target="_blank" class="btn">Visit Movie Homepage</a>
+            <a href=${movie.homepage} target="_blank" class="btn">Visit Movie Homepage</a>
           </div>
         </div>
         <div class="details-bottom">
@@ -221,6 +222,7 @@ const displayShowDetails = async () => {
 };
 
 //backdrop on details pages
+
 const displayBackgroundImage = (type, backgroundPath) => {
   const overlayDiv = document.createElement('div');
 
@@ -230,11 +232,11 @@ const displayBackgroundImage = (type, backgroundPath) => {
   overlayDiv.style.backgroundRepeat = 'no-repeat';
   overlayDiv.style.height = '100vh';
   overlayDiv.style.width = '100vw';
-  // overlayDiv.style.position = "absolute";
-  overlayDiv.style.position = 'fixed';
+  overlayDiv.style.position = 'absolute';
+  //overlayDiv.style.position = 'fixed';
   overlayDiv.style.top = '0';
   overlayDiv.style.left = '0';
-  // overlayDiv.style.zIndex = "-1";
+  overlayDiv.style.zIndex = '-1';
   overlayDiv.style.opacity = '0.1';
 
   if (type === 'movie') {
@@ -254,6 +256,54 @@ const fetchApi = async end => {
   hideSpinner();
   return data;
 };
+
+//slider swiper for Movies
+// const displaySlider = async () => {
+//   const { results } = await fetchApi('movie/now_playing');
+//   console.log(results);
+
+//   results.map(movie => {
+//     const div = document.createElement('div');
+//     div.classList.add('swiper-slide');
+//     div.innerHTML = `
+//   <div class="swiper-slide">
+//   <a href="movie-details.html?id=${movie.is}">
+//     <img src="https://tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" />
+//   </a>
+//   <h4 class="swiper-rating">
+//     <i class="fas fa-star text-secondary"></i> ${movie.vote_average} /10
+//   </h4>
+//   </div>
+//   `;
+
+//     document.querySelector('.swiper-wrapper').appendChild(div);
+//     initSwiper();
+//   });
+// };
+
+// const initSwiper = () => {
+//   const swiper = new Swiper('.swiper', {
+//     slidesPerView: 1,
+//     spaceBetween: 30,
+//     freeMode: true,
+//     loop: true,
+//     autoplay: {
+//       delay: 4000,
+//       disableOnInteraction: false,
+//     },
+//     breakpoints: {
+//       500: {
+//         slidesPerView: 2,
+//       },
+//       700: {
+//         slidesPerView: 3,
+//       },
+//       1200: {
+//         slidesPerView: 4,
+//       },
+//     },
+//   });
+// };
 
 // Highlight active link
 
@@ -283,6 +333,7 @@ const init = () => {
   switch (global.currentPage) {
     case '/':
     case '/index.html':
+      // displaySlider();
       showMoviePopular();
       break;
     case '/shows.html':
