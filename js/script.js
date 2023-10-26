@@ -5,6 +5,16 @@
 
 const global = {
   currentPage: window.location.pathname,
+  search: {
+    term: '',
+    type: '',
+    page: 1,
+    total_pages: 1,
+  },
+  api: {
+    apiKey: '668a01fc8852e1c4fe98bb335096d80a',
+    apiUrl: 'https://api.themoviedb.org/3/',
+  },
 };
 
 const showMoviePopular = async () => {
@@ -247,20 +257,52 @@ const displayBackgroundImage = (type, backgroundPath) => {
 };
 
 const fetchApi = async end => {
-  const API_KEY = '668a01fc8852e1c4fe98bb335096d80a';
-  const API_URL = 'https://api.themoviedb.org/3/';
+  const API_KEY = global.api.apiKey;
+  const API_URL = global.api.apiUrl;
 
   showSpinner();
   const response = await fetch(`${API_URL}${end}?api_key=${API_KEY}&language=en-US`);
   const data = await response.json();
+  console.log('data', data);
   hideSpinner();
   return data;
+};
+
+//request to search
+const searchAPIData = async () => {
+  const API_KEY = global.api.apiKey;
+  const API_URL = global.api.apiUrl;
+
+  showSpinner();
+  const response = await fetch(
+    `${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}`,
+  );
+  const data = await response.json();
+  console.log('data1', data);
+  hideSpinner();
+  return data;
+};
+
+//search movies and shows
+
+const search = async () => {
+  const queryString = window.location.search;
+
+  const urlParams = new URLSearchParams(queryString);
+  global.search.type = urlParams.get('type');
+  global.search.term = urlParams.get('search-term');
+
+  if (global.search.term !== '' && global.search.type !== null) {
+    const results = await searchAPIData();
+    console.log(results);
+  } else {
+    showAlert('Please enter a search term');
+  }
 };
 
 //slider slider swiper for Movies
 const displaySlider = async () => {
   const { results } = await fetchApi('movie/now_playing');
-  console.log(results);
 
   results.forEach(movie => {
     const div = document.createElement('div');
@@ -316,6 +358,18 @@ const highlightActiveLink = () => {
   });
 };
 
+//error alert
+
+const showAlert = (message, className) => {
+  const alertEl = document.createElement('div');
+  alertEl.classList.add('alert', className);
+  alertEl.appendChild(document.createTextNode(message));
+  console.log(alertEl);
+  document.querySelector('#alert').appendChild(alertEl);
+
+  setTimeout(() => alertEl.remove(), 3000);
+};
+
 const addCommasToNumber = number => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
@@ -345,7 +399,7 @@ const init = () => {
       displayShowDetails();
       break;
     case '/search.html':
-      console.log('Search');
+      search();
       break;
   }
   highlightActiveLink();
