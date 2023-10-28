@@ -277,7 +277,6 @@ const searchAPIData = async () => {
     `${API_URL}search/${global.search.type}?api_key=${API_KEY}&query=${global.search.term}&language=en-US`,
   );
   const data = await response.json();
-  console.log('data1', data);
   hideSpinner();
   return data;
 };
@@ -293,11 +292,54 @@ const search = async () => {
   global.search.term = urlParams.get('search-term'); //entered
 
   if (global.search.term !== '' && global.search.type !== null) {
-    const results = await searchAPIData();
-    console.log(results);
+    const { results, total_pages, total_results } = await searchAPIData();
+
+    if (results.length === 0) {
+      showAlert('No results found');
+      return;
+    }
+    displaySearchResults(results);
+    document.getElementById('search-term').value = '';
   } else {
-    showAlert('Please enter a search term');
+    showAlert('Please enter a search term', 'error');
   }
+};
+
+const displaySearchResults = results => {
+  results.map(result => {
+    const div = document.createElement('div');
+    div.classList.add('card');
+
+    div.innerHTML = `
+          <a href="${global.search.type}-details.html?id=${result.id}">
+        ${
+          result.poster_path
+            ? `
+     <img
+        src="https://image.tmdb.org/t/p/w500/${result.poster_path}"
+        class="card-img-top"
+        alt=${global.search.type === 'movie' ? result.title : result.name}
+      />
+         `
+            : `  <img
+         src="images/no-image.jpg"
+         class="card-img-top"
+         alt="${global.search.type === 'movie' ? result.title : result.name}"
+       />
+         `
+        }
+          </a>
+  
+    <div class="card-body">
+      <h5 class="card-title">${global.search.type === 'movie' ? result.title : result.name}</h5>
+      <p class="card-text">
+        <small class="text-muted">Release: ${global.search.type === 'movie' ? result.release_date: result.first_air_date}</small>
+      </p>
+      </div>
+    `;
+
+    document.getElementById('search-results').appendChild(div);
+  });
 };
 
 //slider slider swiper for Movies
@@ -360,7 +402,7 @@ const highlightActiveLink = () => {
 
 //error alert !!!!!!!!!!!!!!!!!!!!!!!!! УБРАТЬ className
 
-const showAlert = (message, className) => {
+const showAlert = (message, className = 'error') => {
   const alertEl = document.createElement('div');
   alertEl.classList.add('alert', className);
   alertEl.appendChild(document.createTextNode(message));
